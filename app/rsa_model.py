@@ -6,19 +6,20 @@ def generatorKeys():
      (pubKey, privKey) = rsa.newkeys(1024)
      return pubKey,privKey
 
+
 def rsa_encrypt_binfile(file_path,save_path,pub_key):
     
       with open(file_path, 'rb') as f:
         message = f.read()
        
       length = len(message)
-      default_length = 117 # 1024 / 8 - 11 1024 is the key length
+      default_length = 117 
      
       result = []
       if length <= default_length:
         result.append(base64.b64encode(rsa.encrypt(message,pub_key)))
     
-      # Need segmentation
+      
       offset = 0
       while length - offset > 0:
         if length - offset > default_length:
@@ -33,19 +34,14 @@ def rsa_encrypt_binfile(file_path,save_path,pub_key):
           w.write(ciphertext)
 
 def rsa_decrypt_binfile(file_path,save_path,priv_key):
-      '''
-      rsa Decrypt binary
-      :file_path:File path to decrypt
-      :save_path:File path stored after decryption
-      :priv_key:Private key
-      '''
+     
       with open(file_path,"rb") as f:
         line = f.readline()
         while line:
           message = base64.b64decode(line.strip(b"\n"))
          
           plaintext = rsa.decrypt(message, priv_key)
-          with open(save_path, 'ab') as w: #Append write
+          with open(save_path, 'ab') as w: 
             w.write(plaintext)
           line = f.readline()
         
