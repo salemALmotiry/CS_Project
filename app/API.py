@@ -91,7 +91,8 @@ def files(file,user_id,KeyType,Rtype,Fkey=""):
         
         File_name = temName+"_"+s_filename
         
-        Decrypt_File_name= File_name
+        Decrypt_File_name= Rtype+"_"+File_name
+
         
         filePath = os.path.join(app.config["UPLOAD_PATH"], File_name)
 
@@ -101,7 +102,7 @@ def files(file,user_id,KeyType,Rtype,Fkey=""):
             return filePath
 
         
-        filePathToSave =  os.path.join(app.config["RSA_PATH"],Decrypt_File_name)
+        filePathToSave =  os.path.join(app.config["UPLOAD_PATH"],Decrypt_File_name)
         
  
         if Rtype=="Encryption":
