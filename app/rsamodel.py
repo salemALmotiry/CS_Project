@@ -50,7 +50,7 @@ def files(wtf_file,KeyType,Rtype,Fkey=""):
             return filePath
 
         
-        filePathToSave =  os.path.join(app.config["RSA_PATH"],Decrypt_File_name)
+        filePathToSave =  os.path.join(app.config["UPLOAD_PATH"],Decrypt_File_name)
         
  
         if Rtype=="Encryption":
