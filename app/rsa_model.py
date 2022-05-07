@@ -45,7 +45,7 @@ def rsa_decrypt_binfile(file_path,save_path,priv_key):
           message = base64.b64decode(line.strip(b"\n"))
          
           plaintext = rsa.decrypt(message, priv_key)
-          with open(save_path, 'ab+') as w: #Append write
+          with open(save_path, 'ab') as w: #Append write
             w.write(plaintext)
           line = f.readline()
         
