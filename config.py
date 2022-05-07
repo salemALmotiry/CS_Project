@@ -4,8 +4,8 @@ class Config(object):
 
     SECRET_KEY = "B\xb2?.\xdf\x9f\xa7m\xf8\x8a%,\xf7\xc4\xfa\x91"
 
-    UPLOAD_PATH= r"CS_Project/upload"
-    RSA_PATH= r"CS_Project/rsa_files"
+    UPLOAD_PATH= r"/app/upload"
+    RSA_PATH= r"/app/rsa_files"
     SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db'
     
     PRIVATE_KEY={

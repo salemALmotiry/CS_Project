@@ -91,8 +91,7 @@ def files(wtf_file,KeyType,Rtype,Fkey=""):
 @app.route("/Encryption" , methods=["GET", "POST"])
 @flask_login.login_required
 def enc():
-    print(pathlib.Path("run.py").parent.absolute())
-    print(pathlib.Path("run.py").parent.resolve())
+    
     form = RsaForm()
 
     if form.validate_on_submit():
