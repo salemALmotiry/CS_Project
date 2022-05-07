@@ -1,0 +1,170 @@
+{% extends "base.html"%}
+{% block style%}  <link rel="stylesheet" href="{{ url_for('static' , filename='css/api.css')   }}"> {%endblock%}
+
+{%block t%}
+  inside index 
+{%endblock%}
+
+
+{%block main%}
+
+ <div class="Container-api">
+    <nav>
+      <div class="current"></div>
+      <a href="#one" >API key</a>
+      <a href="#two">get keys</a>
+      <a href="#three">encrypt/decrypt</a>
+      <a href="#four">sign/verify</a>
+    </nav>
+    <div class="Contents">
+      <div class="Content" id="one">
+      <pre  class="python"><code>import requests
+
+        BASE = "http://127.0.0.1:5000/"
+        username = "test"
+        password = "test"
+        
+
+        response = requests.get(BASE+"api/"+username+"/"+password)
+        print(response.json())
+        
+        #_output_
+        #{'API_key': 'key'}
+  </code></pre>
+    </div>
+    <div class="Content" id="two">
+      <pre class="python"><code>import requests
+        BASE = "http://127.0.0.1:5000/"
+        API_Key = "key"
+                
+        response = requests.get(BASE+"getPublic/"+API_Key)
+        print(response.json())
+
+        response1 = requests.get(BASE+"getPrivate/"+API_Key)
+        print(response.json())
+        
+  
+    </pre></code>
+    </div>
+    <div style="overflow:hidden ;" class="Content" id="three">
+      <pre style="height: 300px;"><code>import requests
+        BASE = "http://127.0.0.1:5000/"
+        API_Key = "key"
+                
+        file = {'file': open('test.docx', 'rb')}
+
+        response = requests.post(BASE+"encrypt/"+API_Key,files=file)
+        if response.status_code == 200:
+            with open("en.docx", 'wb') as f:
+                f.write(response.content)
+
+        file = {'file': open('en.docx', 'rb')}
+
+        response = requests.post(BASE+"decrypt/"+API_Key,files=file)
+        if response.status_code == 200:
+            with open("de.docx", 'wb') as f:
+                f.write(response.content)
+
+      </code></pre>
+    </div>
+    <div class="Content" id="four">
+      <pre style="height: 300px;"><code>import requests
+        BASE = "http://127.0.0.1:5000/"
+        API_Key = "key"
+        
+        file = {'file': open('en.docx', 'rb')}
+
+        response = requests.post(BASE+"sign/"+API_Key,files=file)
+        if response.status_code == 200:
+             with open("sign.txt", 'wb') as f:
+                 f.write(response.content)
+
+        file = {'file': open('en.docx', 'rb') ,
+                'file2': open('sign.txt', 'rb') }
+        response = requests.post(BASE+"verify/"+API_Key,files=file)
+        # print(response.json())
+          
+      </code></pre>
+    </div>
+    </div>
+  </div>
+  
+  
+  <script>
+      hljs.initHighlightingOnLoad();
+
+        const scrollView = document.querySelector('.Container-api .Contents');
+        const tabs = document.querySelectorAll('.Container-api .Contents .Content');
+        const nav = document.querySelectorAll('.Container-api nav a');
+        const currentNav = document.querySelector('.Container-api nav .current');
+        let currentTab = 0;
+
+currentNav.style.width = `${nav[currentTab].clientWidth}px`;
+scrollView.style.height = `${tabs[currentTab].clientHeight}px`;
+
+nav.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const index = Array.prototype.indexOf.call(nav, e.target)
+    if (currentTab === index) return;
+    animateToTab(index)
+  })
+})
+
+const animateToTab = (index) => {
+  const el = tabs[index];
+  const scrollStart = scrollView.scrollLeft;
+  const startHeight = scrollView.clientHeight;
+  nav[currentTab].classList.remove('active')
+  nav[index].classList.add('active')
+  
+  const time = {
+    start: performance.now(),
+    duration: 700,
+  }
+  
+  const tick = now => {
+    time.elapsed = now - time.start;
+    const fadeOut = easeInOutCubic(time.elapsed, 1, -1, time.duration);
+    const fadeIn = easeInOutCubic(time.elapsed, 0, 1, time.duration);
+    const offset = easeInOutCubic(time.elapsed, scrollStart, el.offsetLeft - scrollStart, time.duration)
+    const height = easeInOutCubic(time.elapsed, startHeight, el.clientHeight - startHeight, time.duration)
+
+    const navOffset = easeInOutCubic(
+      time.elapsed,
+      nav[currentTab].offsetLeft,
+      nav[index].offsetLeft - nav[currentTab].offsetLeft,
+      time.duration
+    )
+    
+    const indicatorWidth = easeInOutCubic(
+      time.elapsed,
+      nav[currentTab].clientWidth,
+      nav[index].clientWidth - nav[currentTab].clientWidth,
+      time.duration
+    )
+    
+    currentNav.style.transform = `translateX(${navOffset}px)`;
+    currentNav.style.width = `${indicatorWidth}px`;
+    
+    tabs[currentTab].style.opacity = fadeOut;
+    tabs[index].style.opacity = fadeIn;
+    scrollView.scrollLeft = offset;
+    scrollView.style.height = `${height}px`;
+    
+    if (time.elapsed < time.duration) {
+      requestAnimationFrame(tick);
+    } else {
+      currentTab = index;
+    }
+  }
+  
+  requestAnimationFrame(tick);
+}
+
+var easeInOutCubic = (t, b, c, d) => {
+  if ((t/=d/2) < 1) return c/2*t*t*t + b;
+  return c/2*((t-=2)*t*t + 2) + b;
+}
+  </script>
+{%endblock%}

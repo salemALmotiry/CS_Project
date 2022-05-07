@@ -1,0 +1,77 @@
+{% extends "base.html"%}
+{% block style%}  <link rel="stylesheet" href="{{ url_for('static' , filename='css/main.css')   }}"> {%endblock%}
+
+{%block t%}
+  inside index 
+{%endblock%}
+
+
+{%block main%}
+
+<div class="divcenter" style="width: 395px;" >
+   
+
+{% with messages = get_flashed_messages() %}  
+{% if messages %}
+      
+      {% for message in messages %}
+
+                  {%if message=="verify"%}
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                              {{ message }}
+                              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+
+                  {%elif message=="not verify"%}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                              {{ message }}
+                              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                  {%endif%}
+
+
+
+
+      {% endfor %}
+  {%endif%}
+{%endwith%}
+
+   
+  <form  method="POST" enctype="multipart/form-data" >
+    {{ form.hidden_tag() }}
+
+    <h1> {{method_name}}</h1>
+    
+    <fieldset>
+     
+     <div style="height: fit-content;">
+      <label for="name">File:</label>
+      <!-- <input type="file" id="name" name="user_name"  > -->
+      {{form.fileToProcess( type="file",id="name")}}
+
+    </div>
+
+    
+      <label for="name">Signature file:</label>
+      <!-- <input type="file" id="name" name="user_name"  > -->
+      {{form.fileToProcess2( type="file",id="name")}}
+     
+
+
+    </fieldset>
+     <br>
+    <button type="submit" style="background:#00A170; border-radius: 5px;" >Verify</button>
+
+    
+    
+
+
+  
+  </form>
+
+
+</div>
+
+
+</div>
+{%endblock%}

@@ -1,0 +1,60 @@
+{% extends "base.html"%}
+{% block style%}  <link rel="stylesheet" href="{{ url_for('static' , filename='css/main.css')   }}"> {%endblock%}
+
+{%block t%}
+  inside index 
+{%endblock%}
+
+
+{%block main%}
+
+<div class="divcenter" style="width: 395px;" >
+
+   
+  <form  method="POST" enctype="multipart/form-data" >
+    {{ form.hidden_tag() }}
+
+    <h1> {{method_name}}</h1>
+    
+    <fieldset>
+     
+     <div style="height: fit-content;">
+      <label for="name">File:</label>
+      <!-- <input type="file" id="name" name="user_name"  > -->
+      {{form.fileToProcess(size=1, type="file",id="name")}}
+    </div>
+    
+      
+     <label for="job">Select public Key:</label>
+    
+     <select id="job" name="keys">
+      <option >My key</option>
+    
+      {%for i in Fkey%}
+        <option >{{i[0]}}</option>
+        
+       {%endfor%}
+     
+
+    
+     
+    </select>
+    
+    </fieldset>
+    
+   
+    <fieldset>
+   
+  
+    </fieldset>
+    <button type="submit" style="background:#A2242F; border-radius: 5px;" >Encrypt</button>
+
+    <!-- {{form.submit(class="eninput" )}} -->
+
+
+  
+  </form>
+
+
+</div>
+{%endblock%}

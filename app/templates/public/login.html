@@ -1,0 +1,125 @@
+{% extends "base.html"%}
+
+   
+{% block style%}  <link rel="stylesheet" href="{{ url_for('static' , filename='css/login.css')   }}"> {%endblock%}
+
+{%block t%}
+  inside login 
+{%endblock%}
+
+
+{%block main%}
+
+
+<!-- Wrapper Area -->
+<div class="wrapper__area" id="wrapper_Area">
+  <!-- Forms Area -->
+  <div class="forms__area">
+    <!-- Login Form -->
+    <form method="POST" name="sing in"class="login__form" id="loginForm">
+      {{ logform.hidden_tag() }}
+      <!-- Form Title -->
+    
+      <h1 class="form__title">Sign In!</h1>
+      <!-- inputs Groups -->
+      <div class="input__group">
+        <label class="field">
+       
+          <!-- <input type="text" name="username" placeholder="Username" id="loginUsername"> -->
+          {{ logform.username }}
+       
+        </label>
+        <span class="input__icon"><i class="bx bx-user"></i></span>
+        <small class="input__error_message"></small>
+      </div>
+      <div class="input__group">
+        <label class="field">
+       
+          <!-- <input type="password" name="password" placeholder="Password" id="loginPassword"> -->
+          {{ logform.password }}
+
+       
+        </label>
+        <span class="input__icon"><i class="bx bx-lock"></i></span>
+        <span class="showHide__Icon"><i class="bx bx-hide"></i></span>
+        <small class="input__error_message"></small>
+      </div>
+      <div class="form__actions">
+       
+      </div>
+      <!-- Login Button -->
+    
+      <button type="submit" name="sign in" class="submit-button" id="loginSubmitBtn">Sign in</button>
+      
+      <!-- <label for="loginSubmitBtn" class="submit-button">First name:</label> -->
+
+      {{ logform.submit(id = "submitsignin" ) }}
+
+    
+    </form> <!-- End Login Form -->
+
+    <!-- Sign Up Form -->
+    <form action="/login" method="post" name="sing up"  class="sign-up__form" id="signUpForm">
+      {{ regform.hidden_tag() }}
+
+      <!-- Form Title -->
+      <h1 class="form__title">Sign Up!</h1>
+      <!-- inputs Groups -->
+      <div class="input__group">
+        <label class="field">
+          {{ regform.username }}
+        </label>
+        <span class="input__icon"><i class="bx bx-user"></i></span>
+        <small class="input__error_message"></small>
+      </div>
+      <div class="input__group">
+        <label class="field">
+          <!-- <input type="text" name="email" placeholder="Email@example.com" id="signUpEmail"> -->
+          {{ regform.userEmail }}
+
+        </label>
+        <span class="input__icon"><i class="bx bx-at"></i></span>
+        <small class="input__error_message"></small>
+      </div>
+      <div class="input__group">
+        <label class="field">
+
+          {{ regform.password }}
+        </label>
+        <span class="input__icon"><i class="bx bx-lock"></i></span>
+        <span class="showHide__Icon"><i class="bx bx-hide"></i></span>
+        <small class="input__error_message"></small>
+      </div>
+      <div class="input__group confirm__group">
+       
+        <span class="input__icon"><i class="bx bx-lock"></i></span>
+        <span class="showHide__Icon"><i class="bx bx-hide"></i></span>
+        <small class="input__error_message"></small>
+      </div>
+      <!-- Sign Up Button -->
+      <button class="submit-button" name="sign up" id="signUpSubmitBtn">Sign Up</button>
+      {{ regform.submit(id = "submitsignin" ) }}
+      
+    </form> <!-- End Sign Up Form -->
+  </div><!-- End Forms Area -->
+
+  <!-- Aside Area -->
+  <div class="aside__area" id="aside_Area">
+    <div class="login__aside-info">
+      <h4>Hello</h4>
+      <img src="https://d.top4top.io/p_1945xjz2y1.png" alt="Image">
+   
+      <button id="aside_signUp_Btn">Sign Up</button>
+    </div>
+    <div class="sign-up__aside-info">
+      <h4>Welcome</h4>
+      <img src="https://e.top4top.io/p_1945sidbp2.png" alt="Image">
+      
+      <button id="aside_signIn_Btn">Sign In</button>
+    </div>
+  </div>
+</div>
+<!-- End Wrapper Area -->
+
+
+{%endblock%}
