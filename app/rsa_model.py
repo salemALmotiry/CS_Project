@@ -13,11 +13,7 @@ def rsa_encrypt_binfile(file_path,save_path,pub_key):
        
       length = len(message)
       default_length = 117 # 1024 / 8 - 11 1024 is the key length
-      # rsakey = RSA.importKey(pub_key)
-      # cipher = Cipher_pkcs1_v1_5.new(rsakey)
-    
-
-      # No segmentation required
+     
       result = []
       if length <= default_length:
         result.append(base64.b64encode(rsa.encrypt(message,pub_key)))
@@ -31,7 +27,7 @@ def rsa_encrypt_binfile(file_path,save_path,pub_key):
           result.append(base64.b64encode(rsa.encrypt(message[offset:],pub_key)))
         offset += default_length
       
-      with open(save_path,"ab+") as w:
+      with open(save_path,"ab") as w:
         for ciphertext in result:
           ciphertext += b"\n"
           w.write(ciphertext)
