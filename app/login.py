@@ -47,7 +47,9 @@ def login():
     
     if regform.validate_on_submit() and "sign up" in re :
        
-
+        user = User.query.filter_by(username=regform.username.data).first()
+        if user:
+            return redirect(url_for('login'))
         hush = generate_password_hash(regform.password.data,"sha256")
  
         new_user = User(username=regform.username.data,userEmail=regform.userEmail.data ,password_hash=hush)
