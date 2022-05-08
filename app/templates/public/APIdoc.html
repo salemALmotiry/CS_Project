@@ -40,7 +40,7 @@
         response = requests.get(BASE+"getPublic/"+API_Key)
         print(response.json())
 
-        response1 = requests.get(BASE+"getPrivate/"+API_Key)
+        response = requests.get(BASE+"getPrivate/"+API_Key)
         print(response.json())
         
   
@@ -82,7 +82,7 @@
         file = {'file': open('en.docx', 'rb') ,
                 'file2': open('sign.txt', 'rb') }
         response = requests.post(BASE+"verify/"+API_Key,files=file)
-        # print(response.json())
+        print(response.json())
           
       </code></pre>
     </div>
