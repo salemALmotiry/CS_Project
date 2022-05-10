@@ -1,13 +1,12 @@
 
-from app import db
-import requests
+# from app import db
+# import requests
 
-# db.db.create_all()
-BASE = "https://warm-headland-20382.herokuapp.com/"
+# # db.db.create_all()
+# BASE = "https://warm-headland-20382.herokuapp.com/"
 
 
-API_Key = "Dey7LTaCni98nfhWwefStMUFw6kedmZ5azgT6lX7wuHIeaXWeLf0y3cQDLVo"
-
+# API_Key = "Dey7LTaCni98nfhWwefStMUFw6kedmZ5azgT6lX7wuHIeaXWeLf0y3cQDLVo"
 
 #_____________custom________
 # key_name = ""

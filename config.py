@@ -21,7 +21,7 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    UPLOAD_PATH = r"C:\Users\salem\Desktop\CS_Project\upload_rsa"
+    # UPLOAD_PATH = r"C:\Users\salem\Desktop\CS_Project\upload_rsa"
     
 
 
