@@ -1,7 +1,6 @@
 import io
-import re
 import secrets
-
+from requests import delete
 import werkzeug
 from app import app 
 import flask_login
@@ -10,67 +9,21 @@ from flask import Blueprint, after_this_request, current_app, flash, make_respon
 from flask import request , redirect
 from flask import send_from_directory,abort
 import os
-from app.db import API_Key, PrivateKey, User, db
+from app.db import API_Key, PrivateKey, PrivateKey_API, Publickey_API, User, db
 from app.db import PublicKey, friendPubKey
 from app.forms import AddKey, RsaForm, verifyForm 
 from werkzeug.utils import secure_filename
-from app.rsa_model import generatorKeys, rsa_decrypt_binfile, rsa_encrypt_binfile, sign_sha1, verify_sha1
+from app.rsa_model import generatorKeys, rsa_decrypt_file, rsa_encrypt_file, sign, verify
 from werkzeug.security import check_password_hash ,generate_password_hash
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 
 
 api= Api(app)
 
-class Public_Key(Resource):
-        
-        def get(self,key):
-                result = API_Key.query.filter_by(ApiKey=key).first()
-                if not result : 
-                   abort(404, message="Could not find API key")
-                result = PublicKey.query.filter_by(user_id=result.user_id).first()
-                return {"public_key":str(result.PubKey)}
 
+class ApiG(Resource):
 
-class Private_Key(Resource):
-        
-        def get(self,key):
-                
-                result = API_Key.query.filter_by(ApiKey=key).first()
-                if not result : 
-                   abort(404, message="Could not find API key")
-                
-                result = PrivateKey.query.filter_by(user_id=result.user_id).first()
-                return {"Private_key":str(result.PrvKey)}
-
-
-class ApiGenerated(Resource):
-
-        def get(self,username,password):
-                try :
-                        hush = generate_password_hash(password,"sha256")
-                        new_user = User(username=username,userEmail=username+"API R",password_hash=hush)
-                        db.session.add(new_user)
-                        db.session.commit()
-                except :
-                        abort(404, message="user already exist try (psot) to login and get key")
-                (public_pem,private_pem) = generatorKeys()
-                
-                new_public = PublicKey(user_id=new_user.id ,PubKey=public_pem.save_pkcs1('PEM') )
-                db.session.add(new_public)
-                db.session.commit()
-        
-                new_private = PrivateKey(user_id=new_user.id ,PrvKey=private_pem.save_pkcs1('PEM') )
-                db.session.add(new_private)
-                db.session.commit()
-                
-                generated_key = secrets.token_urlsafe(45)
-
-                NewApiKey = API_Key(user_id=new_user.id ,ApiKey=generated_key)
-                db.session.add(NewApiKey)
-                db.session.commit()
-        
-                return {"API_key":str(generated_key)}
-
+      
         def post(self,username,password):
                  user = User.query.filter_by(username=username).first()
         
@@ -82,10 +35,51 @@ class ApiGenerated(Resource):
                  return   abort(404, message="user not exist")
 
 
+class custom_keys(Resource):
+        def post(self,key,username):
+                result = API_Key.query.filter_by(ApiKey=key).first()
+                if not result : 
+                        abort(404, message="Could not find API key")
+                (public_pem,private_pem) = generatorKeys()
+                
+                new_public_API = Publickey_API(user_id=result.user_id,username=username,PubKey=public_pem.save_pkcs1('PEM') )
+                db.session.add(new_public_API)
+                db.session.commit()
+
+                new_private_API =  PrivateKey_API(user_id=result.user_id,username=username ,PrvKey=private_pem.save_pkcs1('PEM') )
+                db.session.add(new_private_API)
+                db.session.commit()
+                return {"state":"successfully"}
+         
+
+class Public_Key(Resource):
+        
+        def post(self,key):
+                result = API_Key.query.filter_by(ApiKey=key).first()
+                if not result : 
+                   abort(404, message="Could not find API key")
+                result = PublicKey.query.filter_by(user_id=result.user_id).first()
+                return {"public_key":str(result.PubKey)}
+
+
+class Private_Key(Resource):
+        
+        def post(self,key):
+                
+                result = API_Key.query.filter_by(ApiKey=key).first()
+                if not result : 
+                   abort(404, message="Could not find API key")
+                
+                result = PrivateKey.query.filter_by(user_id=result.user_id).first()
+                return {"Private_key":str(result.PrvKey)}
+
+
+
 encr = reqparse.RequestParser()
 encr.add_argument('file', type=werkzeug.datastructures.FileStorage, location='files')
 
-def files(file,user_id,KeyType,Rtype,Fkey=""):
+
+def files(file,Key,KeyType,Rtype,Fkey=""):
         s_filename = secure_filename(file.filename)
         temName = secrets.token_urlsafe(6)
         
@@ -106,26 +100,19 @@ def files(file,user_id,KeyType,Rtype,Fkey=""):
         
  
         if Rtype=="Encryption":
+            Public_Key = rsa.PublicKey.load_pkcs1(Key)
+            rsa_encrypt_file(filePath,filePathToSave,Public_Key)
 
-            result = PublicKey.query.filter_by(user_id=user_id).first()
-            Public_Key = rsa.PublicKey.load_pkcs1( result.PubKey)
-            rsa_encrypt_binfile(filePath,filePathToSave,Public_Key)
-
-        if Rtype=="Encryption-with-Fkey":
-            
-            result = friendPubKey.query.filter_by(firnd_user=Fkey).first()
-            
-            Public_Key = rsa.PublicKey.load_pkcs1( result.PubKey)
-            rsa_encrypt_binfile(filePath,filePathToSave,Public_Key)
-
+        
 
         if KeyType=="Private_Key":
-             result = PrivateKey.query.filter_by(user_id=user_id).first()
-             Private_Key = rsa.PrivateKey.load_pkcs1( result.PrvKey)
+             
+             Private_Key = rsa.PrivateKey.load_pkcs1(Key)
+           
              if Rtype=="Decryption":
-                  rsa_decrypt_binfile(filePath,filePathToSave,Private_Key)
+                  rsa_decrypt_file(filePath,filePathToSave,Private_Key)
              elif Rtype=="Signature":
-                sign_sha1(filePath,filePathToSave,Private_Key)
+                sign(filePath,filePathToSave,Private_Key)
 
        
         return_data = io.BytesIO()
@@ -144,15 +131,33 @@ class Encryption(Resource):
         result = API_Key.query.filter_by(ApiKey=key).first()
         if not result : 
                 abort(404, message="Could not find API key")
-
+        
         args = encr.parse_args()
-        temName = secrets.token_urlsafe(6)
         file = args["file"]
         
-        return_data = files(file,result.user_id,"","Encryption")
+        
+
+        if 'friend key' in request.form: 
+                try:
+                 
+                 result = friendPubKey.query.filter_by(firnd_user=request.form['friend key']).first()
+                
+                except:
+                        return {"error":"could not find Fkey"}
+        elif 'custom keys' in request.form:
+                
+                result = Publickey_API.query.filter(Publickey_API.user_id==result.user_id,Publickey_API.username==request.form["custom keys"]).first()
+                
+        else:
+                 result = PublicKey.query.filter_by(user_id=result.user_id).first()
+                 
+
+        
+       
+        return_data = files(file,result.PubKey,"","Encryption")
 
         return send_file(return_data,attachment_filename=secure_filename(file.filename))
-        
+
 
 class Decryption(Resource):
     def post(self,key):
@@ -161,10 +166,16 @@ class Decryption(Resource):
                 abort(404, message="Could not find API key")
 
         args = encr.parse_args()
-        temName = secrets.token_urlsafe(6)
+        
         file = args["file"]
+        if 'custom keys' in request.form:
+                result = PrivateKey_API.query.filter(PrivateKey_API.user_id==result.user_id,PrivateKey_API.username==request.form["custom keys"]).first()
+        else:
+                result = PrivateKey.query.filter_by(user_id=result.user_id).first()
+
         try:
-         return_data = files(file,result.user_id,"Private_Key","Decryption")
+        
+         return_data = files(file,result.PrvKey,"Private_Key","Decryption")
         except:
                 abort(404,message="Could not decrypt the file")
 
@@ -178,10 +189,14 @@ class Sign(Resource):
                 abort(404, message="Could not find API key")
 
         args = encr.parse_args()
-        
         file = args["file"]
         try:
-             return_data = files(file,result.user_id,"Private_Key","Signature")
+             if 'custom keys' in request.form:
+                result = PrivateKey_API.query.filter(PrivateKey_API.user_id==result.user_id,PrivateKey_API.username==request.form["custom keys"]).first()
+             else:
+                result = PrivateKey.query.filter_by(user_id=result.user_id).first()
+ 
+             return_data = files(file,result.PrvKey,"Private_Key","Signature")
              return send_file(return_data,attachment_filename=secure_filename(file.filename))
 
         except:
@@ -199,71 +214,88 @@ class verifyA(Resource):
                 args = encr.parse_args()
                 
                 file = args["file"]
- 
-
-                FilePath = files(file,result.user_id,"","Verify")
+                FilePath = files(file,"","","Verify")
 
                 f_sign = args["file2"]
              
-        
                 s1_filename = secrets.token_urlsafe(6)+secure_filename(f_sign.filename)
-               
-        
-
                 Sign_File_path = os.path.join(app.config["UPLOAD_PATH"], s1_filename)
-        
-                
-
         
                 f_sign.save(Sign_File_path)
 
         
-                result = PublicKey.query.filter_by(user_id=result.user_id).first()
+                if 'custom keys' in request.form:
+                        result = Publickey_API.query.filter(Publickey_API.user_id==result.user_id,Publickey_API.username==request.form["custom keys"]).first()
+                else:
+                         result = PublicKey.query.filter_by(user_id=result.user_id).first()
+        
                 pubk = rsa.PublicKey.load_pkcs1( result.PubKey)
                 
-                p = verify_sha1(FilePath , Sign_File_path,pubk)
+                p = verify(FilePath , Sign_File_path,pubk)
                 os.remove(FilePath)
                 os.remove(Sign_File_path)
         
                 if p == True:
-
-
                         return {"state":"verify"}
                 elif p==False:
                         return {"state":"not verify"}
 
 
 
-adf = reqparse.RequestParser()
-adf.add_argument("key name",type=str,help="not ",location="form")
-adf.add_argument("key data",type=str,help="not",location="form")
 
 class AddFKey(Resource):
 
         def post(self,key):
-                args = adf.parse_args()
-             
                
                 result = API_Key.query.filter_by(ApiKey=key).first()
 
                 if not result : 
                         abort(404, message="Could not add key")
                 try:
-                        new_f_key = friendPubKey(user_id=result.user_id,firnd_user=args["key name"],PubKey = args["key data"])
+                        new_f_key = friendPubKey(user_id=result.user_id,firnd_user=request.form["key name"],PubKey = request.form["key data"])
                         db.session.add(new_f_key)
                         db.session.commit()
                         return {"state":"successful"}
                 except:
                         return {"state":"field"}
                                 
-        
-api.add_resource(ApiGenerated, "/api/<username>/<password>")                      
+
+class deleteFkey(Resource):
+        def post(self,key):
+                result = API_Key.query.filter_by(ApiKey=key).first()
+                if not result : 
+                        abort(404, message="Could not find API key")
+                try:
+                    result = friendPubKey.query.filter(friendPubKey.user_id==result.user_id,friendPubKey.firnd_user==request.form['friend key']).delete()
+                    db.session.commit()
+                    return {"state":"successful"}
+                except:
+                    return {"state":"failed"}
+                
+
+class deleteCustomkeys(Resource):
+
+        def post(self,key):   
+                result = API_Key.query.filter_by(ApiKey=key).first()
+                if not result : 
+                        abort(404, message="Could not find API key")
+                try:
+                    PrivateKey_API.query.filter(PrivateKey_API.user_id==result.user_id,PrivateKey_API.username==request.form["custom keys"]).delete()
+                    Publickey_API.query.filter(Publickey_API.user_id==result.user_id,Publickey_API.username==request.form["custom keys"]).delete()
+                    db.session.commit()
+                    return {"state":"successful"}
+                except:
+                    return {"state":"failed"}           
+      
+api.add_resource(ApiG, "/api/<username>/<password>")                      
 api.add_resource(Public_Key, "/getPublic/<key>")
 api.add_resource(Private_Key, "/getPrivate/<key>")
 api.add_resource(Encryption, "/encrypt/<key>")
 api.add_resource(Decryption, "/decrypt/<key>")
 api.add_resource(verifyA, "/verify/<key>")        
 api.add_resource(Sign, "/sign/<key>")        
-api.add_resource(AddFKey, "/add_key/<key>")        
-
+api.add_resource(AddFKey, "/add_Fkey/<key>")        
+api.add_resource(deleteFkey, "/delete_Fkey/<key>")        
+api.add_resource(deleteCustomkeys, "/delete_Ckey/<key>")        
+api.add_resource(custom_keys,"/custom_keys/<key>/<username>")
 

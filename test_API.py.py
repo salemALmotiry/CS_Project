@@ -1,61 +1,73 @@
 
-
+from app import db
 import requests
 
+# db.db.create_all()
 BASE = "https://warm-headland-20382.herokuapp.com/"
-username = "tes3t"
-password = "t32st"
-API_Key = "vLwwc4u59h3wbwLDhPlCLRj4iTOixEXx0NxqQiyukIUr-WWwYTpemulp43gj"
 
 
-# response = requests.get(BASE+"api/"+username+"/"+password)
+API_Key = "Dey7LTaCni98nfhWwefStMUFw6kedmZ5azgT6lX7wuHIeaXWeLf0y3cQDLVo"
+
+
+#_____________custom________
+# key_name = ""
+# # Generation custom keys
+# response = requests.post(BASE+"custom_keys/"+API_Key+"/"+key_name)
 # print(response.json())
-# ___________________
+#end_____________________
+#___________en__________
 
+# file = {'file': open('RSA.pdf', 'rb')}
 
-
-                
-# response = requests.get(BASE+"getPublic/"+API_Key)
-# print(response.json())
-
-# response1 = requests.get(BASE+"getPrivate/"+API_Key)
-# print(response.json())
-
-
-# __________________________________________
-
-
-# file = {'file': open('text.docx', 'rb')}
-
-# response = requests.post(BASE+"encrypt/"+API_Key,files=file)
+# response = requests.post(BASE+"encrypt/"+API_Key,files=file,)
 # if response.status_code == 200:
-#     with open("en.docx", 'wb') as f:
+#     with open("en.pdf", 'wb') as f:
 #         f.write(response.content)
+#end__________________________
 
-#_____________________________________________________-
+#_____________de_____________
+# file = {'file': open('en.pdf', 'rb')}
 
-
-
-# file = {'file': open('en.docx', 'rb')}
-
-# response = requests.post(BASE+"decrypt/"+API_Key,files=file)
+# response = requests.post(BASE+"decrypt/"+API_Key,files=file,)
 # if response.status_code == 200:
-#   with open("de.docx", 'wb') as f:
-#       f.write(response.content)
+#     with open("de.pdf", 'wb') as f:
+#         f.write(response.content)
+#end___________________________
 
-# ___________________________________________
+#_____________sign_____________
 
-# file = {'file': open('en.docx', 'rb')}
 
+# file = {'file': open('en.pdf', 'rb')}
 # response = requests.post(BASE+"sign/"+API_Key,files=file)
 # if response.status_code == 200:
 #         with open("sign.txt", 'wb') as f:
 #             f.write(response.content)
 
+#end___________________________________
+
+#_____________ver_____________
+
+# file = {'file': open('en.pdf', 'rb') ,
+#     'file2': open('sign.txt', 'rb') }
+
+# response = requests.post(BASE+"verify/"+API_Key,files=file)
+# print(response.json())
+
+#end___________________________
+
+
+
 
 # _________________________________________
 
-# file = {'file': open('en.docx', 'rb') ,
-#     'file2': open('sign.txt', 'rb') }
-# response = requests.post(BASE+"verify/"+API_Key,files=file)
-# print(response.json())
+
+# key='''-----BEGIN RSA PUBLIC KEY-----
+# MIGJAoGBAIBWCiHJOaIWVqjpO48Eek2HbCE7ZtyjFjGaCBIdLrOOocpJeVJqiB99
+# G2EF1rQcC+d9scBjUsB/jU/fXa9Mv7ryKr2Ew8O4FyW9QZOvgntV+61mpQI9OWZf
+# xbznnS7euaBfZBkh+f8jmi6eUx2nF2HrY/4O11LNIjymOt7yfqaBAgMBAAE=
+# -----END RSA PUBLIC KEY-----'''
+# data = {"key name":"salem",
+#         "key data":key}
+
+# response = requests.post(BASE+"add_key/"+API_Key,data=data)
+

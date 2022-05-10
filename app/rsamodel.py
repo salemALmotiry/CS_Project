@@ -11,7 +11,7 @@ from app.db import PrivateKey, db
 from app.db import PublicKey, friendPubKey
 from app.forms import AddKey, RsaForm, verifyForm 
 from werkzeug.utils import secure_filename
-from app.rsa_model import rsa_decrypt_binfile, rsa_encrypt_binfile, sign_sha1, verify_sha1
+from app.rsa_model import rsa_decrypt_file, rsa_encrypt_file, sign, verify
 
 
 
@@ -57,23 +57,23 @@ def files(wtf_file,KeyType,Rtype,Fkey=""):
 
             result = PublicKey.query.filter_by(user_id=flask_login.current_user.id).first()
             Public_Key = rsa.PublicKey.load_pkcs1( result.PubKey)
-            rsa_encrypt_binfile(filePath,filePathToSave,Public_Key)
+            rsa_encrypt_file(filePath,filePathToSave,Public_Key)
 
         if Rtype=="Encryption-with-Fkey":
             
             result = friendPubKey.query.filter_by(firnd_user=Fkey).first()
             
             Public_Key = rsa.PublicKey.load_pkcs1( result.PubKey)
-            rsa_encrypt_binfile(filePath,filePathToSave,Public_Key)
+            rsa_encrypt_file(filePath,filePathToSave,Public_Key)
 
 
         if KeyType=="Private_Key":
              result = PrivateKey.query.filter_by(user_id=flask_login.current_user.id).first()
              Private_Key = rsa.PrivateKey.load_pkcs1( result.PrvKey)
              if Rtype=="Decryption":
-                  rsa_decrypt_binfile(filePath,filePathToSave,Private_Key)
+                  rsa_decrypt_file(filePath,filePathToSave,Private_Key)
              elif Rtype=="Signature":
-                sign_sha1(filePath,filePathToSave,Private_Key)
+                sign(filePath,filePathToSave,Private_Key)
 
        
         return_data = io.BytesIO()
@@ -183,7 +183,7 @@ def verify():
         result = PublicKey.query.filter_by(user_id=flask_login.current_user.id).first()
         pubk = rsa.PublicKey.load_pkcs1( result.PubKey)
         
-        p = verify_sha1(FilePath , Sign_File_path,pubk)
+        p = verify(FilePath , Sign_File_path,pubk)
         os.remove(FilePath)
         os.remove(Sign_File_path)
     

@@ -7,7 +7,7 @@ def generatorKeys():
      return pubKey,privKey
 
 
-def rsa_encrypt_binfile(file_path,save_path,pub_key):
+def rsa_encrypt_file(file_path,save_path,pub_key):
     
       with open(file_path, 'rb') as f:
         message = f.read()
@@ -33,7 +33,7 @@ def rsa_encrypt_binfile(file_path,save_path,pub_key):
           ciphertext += b"\n"
           w.write(ciphertext)
 
-def rsa_decrypt_binfile(file_path,save_path,priv_key):
+def rsa_decrypt_file(file_path,save_path,priv_key):
      
       with open(file_path,"rb") as f:
         line = f.readline()
@@ -41,13 +41,13 @@ def rsa_decrypt_binfile(file_path,save_path,priv_key):
           message = base64.b64decode(line.strip(b"\n"))
          
           plaintext = rsa.decrypt(message, priv_key)
-          with open(save_path, 'ab') as w: 
+          with open(save_path, 'ab+') as w: 
             w.write(plaintext)
           line = f.readline()
         
         
 
-def sign_sha1(file_path,save_path, privkey):
+def sign(file_path,save_path, privkey):
     with open(file_path, 'rb') as f:
         message = f.read()
    
@@ -58,7 +58,7 @@ def sign_sha1(file_path,save_path, privkey):
 
     
 
-def verify_sha1(file_path, signature_path, pubkey):
+def verify(file_path, signature_path, pubkey):
     try:
         with open(signature_path, 'rb') as f:
              signature =base64.b64decode( f.read())

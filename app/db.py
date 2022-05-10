@@ -54,6 +54,21 @@ class PrivateKey(db.Model):
       user_id =  db.Column(db.Integer, db.ForeignKey('User.id'),nullable=False)
       PrvKey = db.Column(db.String(600), nullable=False)
 
+
+class Publickey_API(db.Model):
+        __tablename__="Publickey_API" 
+        id = db.Column(db.Integer, primary_key=True)
+        user_id =  db.Column(db.Integer, db.ForeignKey('User.id'),nullable=False)
+        username = db.Column(db.String(20), nullable=False, unique=True)
+        PubKey = db.Column(db.String(600), nullable=False)
+
+class PrivateKey_API(db.Model):
+        __tablename__="PrivateKey_API" 
+        id = db.Column(db.Integer, primary_key=True)
+        user_id =  db.Column(db.Integer, db.ForeignKey('User.id'),nullable=False)
+        username = db.Column(db.String(20), nullable=False, unique=True)
+        PrvKey = db.Column(db.String(600), nullable=False)
+
     
 class friendPubKey(db.Model):
     id = db.Column(db.Integer, primary_key=True)

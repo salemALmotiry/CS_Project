@@ -15,12 +15,15 @@
       <a href="#two">get keys</a>
       <a href="#three">encrypt/decrypt</a>
       <a href="#four">sign/verify</a>
+      <a href="#Fkey">Fkey</a>
+      <a href="#Custom_keys">Custom keys</a>
+
     </nav>
     <div class="Contents">
       <div class="Content" id="one">
       <pre  class="python"><code>import requests
 
-        BASE = "http://127.0.0.1:5000/"
+        BASE = "https://warm-headland-20382.herokuapp.com/"
         username = "test"
         password = "test"
         
@@ -34,7 +37,7 @@
     </div>
     <div class="Content" id="two">
       <pre class="python"><code>import requests
-        BASE = "http://127.0.0.1:5000/"
+        BASE = "https://warm-headland-20382.herokuapp.com/"
         API_Key = "key"
                 
         response = requests.get(BASE+"getPublic/"+API_Key)
@@ -48,7 +51,7 @@
     </div>
     <div style="overflow:hidden ;" class="Content" id="three">
       <pre style="height: 300px;"><code>import requests
-        BASE = "http://127.0.0.1:5000/"
+        BASE = "https://warm-headland-20382.herokuapp.com/"
         API_Key = "key"
                 
         file = {'file': open('test.docx', 'rb')}
@@ -69,7 +72,7 @@
     </div>
     <div class="Content" id="four">
       <pre style="height: 300px;"><code>import requests
-        BASE = "http://127.0.0.1:5000/"
+        BASE = "https://warm-headland-20382.herokuapp.com/"
         API_Key = "key"
         
         file = {'file': open('en.docx', 'rb')}
@@ -78,6 +81,7 @@
         if response.status_code == 200:
              with open("sign.txt", 'wb') as f:
                  f.write(response.content)
+        #-----------------------------------------
 
         file = {'file': open('en.docx', 'rb') ,
                 'file2': open('sign.txt', 'rb') }
@@ -86,6 +90,85 @@
           
       </code></pre>
     </div>
+    <div class="Content" id="Fkey">
+      <pre style="height: 300px;"><code>import requests
+    BASE = "https://warm-headland-20382.herokuapp.com/"
+    API_Key = "key"
+    data = {"key name":"salem", "key data":"Key *PEM form"}
+    response = requests.post(BASE+"add_Fkey/"+API_Key,data=data)
+    print(response.json())
+    #-------------------encrypt----------------------
+
+    file = {'file': open('RSA_salem_almotiry.pdf', 'rb')}
+    data = { "friend key":"salem"}
+    response = requests.post(BASE+"encrypt/"+API_Key,files=file,data=data)
+    if response.status_code == 200:
+    with open("en.pdf", 'wb') as f:
+        f.write(response.content)
+    
+    #-------------------delete Fkey-------------
+            
+    data = {"friend key":"salem"}
+
+    response = requests.post(BASE+"delete_Fkey/"+API_Key,data=data)
+    print(response.json())
+                  
+      </code></pre>
+    </div>
+      
+    <div class="Content" id="Custom_keys">
+      <pre style="height: 309px;"><code>import requests
+    BASE = "https://warm-headland-20382.herokuapp.com/"
+    API_Key = "key"
+    key_name = "salem"
+    # Generation custom keys
+    response = requests.post(BASE+"custom_keys/"+API_Key+"/"+key_name)
+    print(response.json())
+    
+    #-------------------encrypt/decrypt----------------------
+    file = {'file': open('RSA.pdf', 'rb')}
+    data = { "custom keys":"salem"}
+    #-----------------------------------------
+
+    response = requests.post(BASE+"encrypt/"+API_Key,files=file,data=data)
+    if response.status_code == 200:
+    with open("en.pdf", 'wb') as f:
+        f.write(response.content)
+    
+
+    response = requests.post(BASE+"decrypt/"+API_Key,files=file,data=data)
+    if response.status_code == 200:
+        with open("de.pdf", 'wb') as f:
+            f.write(response.content)
+    
+    #-------------------sign/verify---------------------------
+     file = {'file': open('en.pdf', 'rb')}
+     data = {"custom keys":"salem"}
+
+     response = requests.post(BASE+"sign/"+API_Key,files=file,data=data)
+     if response.status_code == 200:
+           with open("sign.txt", 'wb') as f:
+                f.write(response.content)
+    #-----------
+    file = {'file': open('en.pdf', 'rb') ,
+    'file2': open('sign.txt', 'rb') }
+    data = {"custom keys":"salem"}
+
+    response = requests.post(BASE+"verify/"+API_Key,files=file,data=data)
+    print(response.json())
+
+
+
+
+    #-------------------delete custom keys-------------------
+    
+    data = {"custom keys":"salem"}
+    response = requests.post(BASE+"delete_Ckey/"+API_Key,data=data)
+    print(response.json())
+          
+      </code></pre>
+    </div>
+    
     </div>
   </div>
   

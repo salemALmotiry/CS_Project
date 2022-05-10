@@ -1,3 +1,4 @@
+import secrets
 import flask_login
 from app import app 
 from flask import Flask, flash, render_template, request, url_for, redirect
@@ -8,7 +9,7 @@ from wtforms import StringField, PasswordField, SubmitField,BooleanField
 from wtforms.validators import InputRequired, Length, ValidationError
 from werkzeug.security import check_password_hash ,generate_password_hash
 from flask_bcrypt import Bcrypt
-from app.db import LoginForm,RegisterForm,User,PublicKey,PrivateKey,db
+from app.db import LoginForm,RegisterForm,User,PublicKey,PrivateKey,API_Key,db
 from app.rsa_model import generatorKeys
 
 
@@ -64,6 +65,10 @@ def login():
      
         new_private = PrivateKey(user_id=new_user.id ,PrvKey=private_pem.save_pkcs1('PEM') )
         db.session.add(new_private)
+        db.session.commit()
+        generated_key = secrets.token_urlsafe(45)
+        NewApiKey = API_Key(user_id=new_user.id ,ApiKey=generated_key)
+        db.session.add(NewApiKey)
         db.session.commit()
         return redirect(url_for('login'))
       
