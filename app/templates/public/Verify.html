@@ -29,9 +29,6 @@
                             </div>
                   {%endif%}
 
-
-
-
       {% endfor %}
   {%endif%}
 {%endwith%}
@@ -40,32 +37,41 @@
   <form  method="POST" enctype="multipart/form-data" >
     {{ form.hidden_tag() }}
 
-    <h1> {{method_name}}</h1>
+    <h2> {{method_name}}</h2>
     
     <fieldset>
      
      <div style="height: fit-content;">
       <label for="name">File:</label>
-      <!-- <input type="file" id="name" name="user_name"  > -->
       {{form.fileToProcess( type="file",id="name")}}
 
-    </div>
-
-    
       <label for="name">Signature file:</label>
-      <!-- <input type="file" id="name" name="user_name"  > -->
       {{form.fileToProcess2( type="file",id="name")}}
      
+     
+        <label for="keys">Select public Key: </label>
+    
+        <select id="keys" name="keys">
+         <option >My key</option>
+         {%for i in Fkey%}
+           <option >{{i[0]}}</option>
+           
+          {%endfor%}
+        
+   
+       
+        
+       </select>
+    
+    </div>
+    
 
+
+      <button type="submit" style="background:#00A170; border-radius: 5px;" >Verify</button>
 
     </fieldset>
-     <br>
-    <button type="submit" style="background:#00A170; border-radius: 5px;" >Verify</button>
-
     
     
-
-
   
   </form>
 
@@ -73,5 +79,5 @@
 </div>
 
 
-</div>
+
 {%endblock%}

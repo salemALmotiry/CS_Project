@@ -21,7 +21,10 @@
     margin: 0 0 30px 0;
     text-align: center;
   }
-  
+  h2 {
+    margin: 0 0 15px 0;
+    text-align: center;
+  }
   input[type="text"],
   input[type="data"],
   input[type="file"],

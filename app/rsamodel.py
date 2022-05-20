@@ -155,13 +155,14 @@ def signature():
 
 @app.route("/verify", methods=["GET", "POST"])
 @flask_login.login_required
-def verify():
+def Verify():
     form = verifyForm()
 
     if form.validate_on_submit():
       
         f = form.fileToProcess.data
-        
+     
+            
         FilePath = files(f,"","Verify")
 
         f_sign = form.fileToProcess2.data
@@ -178,23 +179,31 @@ def verify():
 
        
         f_sign.save(Sign_File_path)
-
-       
-        result = PublicKey.query.filter_by(user_id=flask_login.current_user.id).first()
-        pubk = rsa.PublicKey.load_pkcs1( result.PubKey)
+        fkey = request.form["keys"]
         
-        p = verify(FilePath , Sign_File_path,pubk)
+        if fkey=="My key":
+           result = PublicKey.query.filter_by(user_id=flask_login.current_user.id).first()
+           pubk = rsa.PublicKey.load_pkcs1( result.PubKey)
+
+        else:
+            result = friendPubKey.query.filter_by(firnd_user=fkey).first()
+            pubk = rsa.PublicKey.load_pkcs1( result.PubKey)
+        
+        
+        p = verify(FilePath ,Sign_File_path,pubk)
         os.remove(FilePath)
         os.remove(Sign_File_path)
     
         if p == True:
 
             flash("verify")
-            return redirect(url_for("verify"))
+            return redirect(url_for("Verify"))
         elif p==False:
             flash("not verify")
-            return redirect(url_for("verify"))
+            return redirect(url_for("Verify"))
 
     method_name = "Verify" 
-    return render_template("/public/Verify.html",form=form ,method_name=method_name )
+    Fkey = friendPubKey.query.with_entities(friendPubKey.firnd_user).filter(friendPubKey.user_id==flask_login.current_user.id).all()
+
+    return render_template("/public/Verify.html",form=form ,method_name=method_name,Fkey=Fkey )
 
