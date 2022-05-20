@@ -3,10 +3,10 @@
 import requests
 
 # # db.db.create_all()
-BASE = "http://127.0.0.1:5000/"
+# BASE = "https://warm-headland-20382.herokuapp.com/"
 
 
-API_Key = "Dey7LTaCni98nfhWwefStMUFw6kedmZ5azgT6lX7wuHIeaXWeLf0y3cQDLVo"
+# API_Key = "Dey7LTaCni98nfhWwefStMUFw6kedmZ5azgT6lX7wuHIeaXWeLf0y3cQDLVo"
 
 #_____________custom________
 # key_name = "test3"
@@ -20,9 +20,9 @@ API_Key = "Dey7LTaCni98nfhWwefStMUFw6kedmZ5azgT6lX7wuHIeaXWeLf0y3cQDLVo"
 # print(response.json())
 
 #____
-data ={"custom key":"test3"}
-response = requests.post(BASE+"getPublic/"+API_Key,data=data)
-print(response.json())
+# data ={"custom key":"test3"}
+# response = requests.post(BASE+"getPublic/"+API_Key,data=data)
+# print(response.json())
 
 #___________en__________
 
