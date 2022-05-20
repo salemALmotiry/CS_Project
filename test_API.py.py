@@ -1,20 +1,31 @@
 
 # from app import db
-# import requests
+import requests
 
 # # db.db.create_all()
-# BASE = "https://warm-headland-20382.herokuapp.com/"
+BASE = "http://127.0.0.1:5000/"
 
 
-# API_Key = "Dey7LTaCni98nfhWwefStMUFw6kedmZ5azgT6lX7wuHIeaXWeLf0y3cQDLVo"
+API_Key = "Dey7LTaCni98nfhWwefStMUFw6kedmZ5azgT6lX7wuHIeaXWeLf0y3cQDLVo"
 
 #_____________custom________
-# key_name = ""
+# key_name = "test3"
 # # Generation custom keys
 # response = requests.post(BASE+"custom_keys/"+API_Key+"/"+key_name)
 # print(response.json())
 #end_____________________
+#____________get__________
+# get custom keys
+# response = requests.post(BASE+"getCustomKeys/"+API_Key)
+# print(response.json())
+
+#____
+data ={"custom key":"test3"}
+response = requests.post(BASE+"getPublic/"+API_Key,data=data)
+print(response.json())
+
 #___________en__________
+
 
 # file = {'file': open('RSA.pdf', 'rb')}
 

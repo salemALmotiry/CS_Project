@@ -39,11 +39,15 @@
       <pre class="python"><code>import requests
         BASE = "https://warm-headland-20382.herokuapp.com/"
         API_Key = "key"
-                
+        
         response = requests.get(BASE+"getPublic/"+API_Key)
         print(response.json())
-
-        response = requests.get(BASE+"getPrivate/"+API_Key)
+            
+        data ={"custom key":"test3"}
+        response = requests.post(BASE+"getPublic/"+API_Key,data=data)
+        print(response.json())
+        
+        response = requests.get(BASE+"getCustomKeys/"+API_Key)
         print(response.json())
         
   

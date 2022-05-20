@@ -58,11 +58,16 @@ class Public_Key(Resource):
                 result = API_Key.query.filter_by(ApiKey=key).first()
                 if not result : 
                    abort(404, message="Could not find API key")
-                result = PublicKey.query.filter_by(user_id=result.user_id).first()
-                return {"public_key":str(result.PubKey)}
+               
+                if 'custom key' in request.form:
+                          result = Publickey_API.query.filter(Publickey_API.user_id==result.user_id,Publickey_API.username==request.form["custom key"]).first()
+                          return {"public_key:"+result.username:str(result.PubKey)}
+                else:      
+                        result = PublicKey.query.filter_by(user_id=result.user_id).first()
+                        return {"public_key":str(result.PubKey)}
 
 
-class Private_Key(Resource):
+class getCustomKeys(Resource):
         
         def post(self,key):
                 
@@ -70,8 +75,9 @@ class Private_Key(Resource):
                 if not result : 
                    abort(404, message="Could not find API key")
                 
-                result = PrivateKey.query.filter_by(user_id=result.user_id).first()
-                return {"Private_key":str(result.PrvKey)}
+                Fkey = Publickey_API.query.with_entities(Publickey_API.username).filter(Publickey_API.user_id==result.user_id).all()
+
+                return {"Custom keys":str(Fkey)}
 
 
 
@@ -289,7 +295,7 @@ class deleteCustomkeys(Resource):
       
 api.add_resource(ApiG, "/api/<username>/<password>")                      
 api.add_resource(Public_Key, "/getPublic/<key>")
-api.add_resource(Private_Key, "/getPrivate/<key>")
+api.add_resource(getCustomKeys, "/getCustomKeys/<key>")
 api.add_resource(Encryption, "/encrypt/<key>")
 api.add_resource(Decryption, "/decrypt/<key>")
 api.add_resource(verifyA, "/verify/<key>")        
